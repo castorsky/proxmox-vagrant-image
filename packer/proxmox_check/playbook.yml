@@ -1,0 +1,6 @@
+---
+- name: Prepare Proxmox VE virtual machine to use with Vagrant
+  hosts: all
+  become: true
+  roles:
+    - pve-vagrant

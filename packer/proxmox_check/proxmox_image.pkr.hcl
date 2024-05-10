@@ -1,32 +1,34 @@
-source "proxmox-clone" "proxmox-image-test" {
-  clone_vm_id              = 111
-  cores                    = 2
-  sockets                  = 1
-  insecure_skip_tls_verify = true
-  memory                   = 2048
-  os                       = "l26"
-  scsi_controller          = "virtio-scsi-single"
-  cpu_type                 = "host"
+source "qemu" "proxmox-qemu-image" {
+  iso_checksum = "sha256:815a45f6f24cb7b5a6d1877e117cf05c00f3fcdf9f58bc97da1319ff7590d237"
+  iso_url      = "file:///home/castor/VSCodeProjects/baklan/proxmox-vagrant-image/packer/proxmox/output-proxmox-qemu-image/packer-proxmox-qemu-image"
 
-  network_adapters {
-    bridge = "vmbr0"
-    model  = "virtio"
-  }
-  ssh_username         = "root"
-  ssh_password         = "vagrant"
-  template_description = "Template image for Proxmox VE host"
-  template_name        = "proxmox-node-8.2-test"
-  task_timeout         = "5m"
-  ssh_timeout          = "10m"
+  disk_image       = true
+  use_backing_file = false
+  disk_interface   = "virtio"
+  disk_cache       = "writeback"
+  disk_discard     = "unmap"
+  format           = "qcow2"
+  accelerator      = "kvm"
+  headless         = false
+  cpu_model        = "host"
+  cores            = 2
+  memory           = 2048
+  net_device       = "virtio-net"
 
-  node        = var.proxmox_node
-  username    = var.proxmox_username
-  token       = var.proxmox_password
-  proxmox_url = var.proxmox_url
+  ssh_username = "root"
+  ssh_password = "vagrant"
+  ssh_timeout  = "10m"
+
 }
 
 build {
-  sources = ["source.proxmox-clone.proxmox-image-test"]
+  sources = ["source.qemu.proxmox-qemu-image"]
+
+  provisioner "ansible" {
+    playbook_file = "./playbook.yml"
+    use_proxy     = "false"
+  }
+
   post-processors {
     post-processor "vagrant" {
       provider_override = "libvirt"

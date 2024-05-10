@@ -1,0 +1,12 @@
+galaxy_info:
+  author: Castor Sky
+  description: Prepare Proxmox VE node to deploy with Vagrant
+
+  license: BSD-3-Clause
+
+  min_ansible_version: "1.15"
+
+  platforms:
+    - name: Debian
+      versions:
+        - "bookworm"

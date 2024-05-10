@@ -1,6 +1,6 @@
 # Proxmox Vagrant Image
 
-
+Always check on localhost if it supports nesten virtualization: https://pve.proxmox.com/wiki/Nested_Virtualization
 
 ## Getting started
 

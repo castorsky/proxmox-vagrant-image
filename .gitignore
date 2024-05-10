@@ -1,2 +1,4 @@
 .DS_Store
 packer/**/creds.pkrvars.hcl
+packer/**/*-qemu-image
+packer/**/*amd64.box

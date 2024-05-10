@@ -1,0 +1,10 @@
+auto lo
+iface lo inet loopback
+
+iface eth0 inet manual
+
+auto vmbr0
+iface vmbr0 inet dhcp
+    bridge-ports eth0
+    bridge-stp off
+    bridge-fd 0

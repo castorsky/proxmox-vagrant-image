@@ -1,0 +1,8 @@
+---
+# handlers file for pve-vagrant
+- name: Rebuild GRUB config
+  ansible.builtin.command:
+    cmd: "/usr/sbin/update-grub2"
+  register: pve_vagrant__grub_result
+  changed_when: >
+    'done' is in pve_vagrant__grub_result.stdout
