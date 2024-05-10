@@ -1,6 +1,7 @@
 source "qemu" "proxmox-qemu-image" {
-  iso_checksum = "sha256:d99d182a0df4ba94c27668d3e33d14cc286d775a7bdf571a86c24ea522009e93"
-  iso_url      = "file:///home/castor/Downloads/proxmox-ve_8.2-1.iso"
+  iso_checksum     = "sha256:d99d182a0df4ba94c27668d3e33d14cc286d775a7bdf571a86c24ea522009e93"
+  iso_url          = "file:///home/castor/Downloads/proxmox-ve_8.2-1.iso"
+  output_directory = "/home/castor/temp/output_proxmox"
 
   disk_size          = "40G"
   disk_interface     = "virtio-scsi"
@@ -14,6 +15,7 @@ source "qemu" "proxmox-qemu-image" {
   cores              = 2
   memory             = 2048
   net_device         = "virtio-net"
+  shutdown_command   = "echo 'packer' | sudo -S shutdown -P now"
 
   ssh_username = "root"
   ssh_password = "vagrant"
