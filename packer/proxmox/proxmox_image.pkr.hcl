@@ -1,27 +1,3 @@
-variable "proxmox_password" {
-  type        = string
-  default     = "supersecret"
-  description = "User password to use when connecting to PVE API."
-}
-
-variable "proxmox_username" {
-  type        = string
-  default     = "apiuser@pve!token"
-  description = "User with realm and optionally token name to use when connecting to PVE API."
-}
-
-variable "proxmox_node" {
-  type        = string
-  default     = "pve"
-  description = "Use this PVE node to pack image."
-}
-
-variable "proxmox_url" {
-  type        = string
-  default     = "https://127.0.0.1:8006/api2/json"
-  description = "Connect to PVE API with this URL."
-}
-
 source "proxmox-iso" "proxmox-image" {
   iso_file = "local:iso/proxmox-ve_8.2-1.iso"
   # These options for not existing ISO file
@@ -47,7 +23,11 @@ source "proxmox-iso" "proxmox-image" {
     # Input password and email (default email fails)
     "vagrant<tab>vagrant<tab>vagrant@example.com<tab><tab><enter><wait>",
     # Leave network settings untouched, launch installation
-    "<tab><tab><tab><tab><tab><tab><enter><wait><enter>"
+    "<tab><tab><tab><tab><tab><tab><enter><wait><enter>",
+    # Wait for setup and install qemu-guest-agent
+    "<wait3m>root<enter><wait>vagrant<enter><wait3s>",
+    "apt update; apt install -y qemu-guest-agent<enter><wait1m>",
+    "systemctl enable --now qemu-guest-agent<enter>"
   ]
 
   cores                    = 2
