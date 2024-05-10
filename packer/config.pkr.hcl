@@ -12,5 +12,9 @@ packer {
       version = "~> 1.1.0"
       source  = "github.com/hashicorp/qemu"
     }
+    vagrant = {
+      source  = "github.com/hashicorp/vagrant"
+      version = "~> 1.1.2"
+    }
   }
 }
