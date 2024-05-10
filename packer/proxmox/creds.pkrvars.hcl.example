@@ -1,0 +1,3 @@
+proxmox_username = "root@pve"
+proxmox_password = "secret"
+proxmox_url = "https://host.baklan.online:8006/api2/json"
