@@ -1,5 +1,50 @@
 ---
 # tasks file for pve-vagrant
+- name: Create vagrant user with predefined password
+  ansible.builtin.user:
+    name: "vagrant"
+    create_home: true
+    shell: "/bin/bash"
+    password: "$6$3rtaXePeRZrLePT/$NRkB3ZyNdwabzbQU2H3KqgahWPgZa5dwwsx8I22BfmIdgFYP.JaBli8PGSVaa1QoEHFOVoahfjEnPPYQryoEY/"
+
+- name: Add insecure vagrant public key
+  ansible.posix.authorized_key:
+    user: vagrant
+    key: "{{ pve_vagrant__vagrant_key_url }}"
+    exclusive: true
+    manage_dir: true
+    state: present
+
+- name: Setup sudoers for vagrant user
+  ansible.builtin.copy:
+    src: "vagrant-sudoers"
+    dest: "/etc/sudoers.d/vagrant"
+    owner: root
+    group: root
+    mode: "0440"
+    backup: false
+
+- name: Remove enterprise repositories
+  ansible.builtin.apt_repository:
+    repo: "{{ item }}"
+    update_cache: false
+    state: absent
+  loop:
+    - deb https://enterprise.proxmox.com/debian/pve bookworm pve-enterprise
+    - deb https://enterprise.proxmox.com/debian/ceph-quincy bookworm enterprise
+
+- name: Add no-subscription repository
+  ansible.builtin.apt_repository:
+    repo: "deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription"
+    filename: "pve-no-subscription.list"
+    update_cache: false
+    state: present
+
+- name: Install SUDO package
+  ansible.builtin.package:
+    name: sudo
+    state: present
+
 - name: Revert old fashion names for network interfaces (ethXX)
   ansible.builtin.copy:
     src: "grub-network-interfaces.cfg"
@@ -18,42 +63,3 @@
     group: root
     mode: "0644"
     backup: false
-
-- name: Create vagrant user with predefined password
-  ansible.builtin.user:
-    name: "vagrant"
-    create_home: true
-    password: "$6$3rtaXePeRZrLePT/$NRkB3ZyNdwabzbQU2H3KqgahWPgZa5dwwsx8I22BfmIdgFYP.JaBli8PGSVaa1QoEHFOVoahfjEnPPYQryoEY/"
-
-- name: Add insecure vagrant public key
-  ansible.posix.authorized_key:
-    user: vagrant
-    key: "{{ pve_vagrant__vagrant_key_url }}"
-    exclusive: true
-    manage_dir: true
-    state: present
-
-- name: Setup sudoers for vagrant user
-  ansible.builtin.copy:
-    src: "vagrant-sudoers"
-    dest: "/etc/sudoers.d/vagrant"
-    owner: root
-    group: root
-    mode: "0640"
-    backup: false
-
-- name: Remove enterprise repositories
-  ansible.builtin.apt_repository:
-    repo: "{{ item }}"
-    update_cache: false
-    state: absent
-  loop:
-    - deb https://enterprise.proxmox.com/debian/pve bookworm pve-enterprise
-    - deb https://enterprise.proxmox.com/debian/ceph-quincy bookworm enterprise
-
-- name: Add no-subscription repository
-  ansible.builtin.apt_repository:
-    repo: "deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription"
-    filename: "pve-no-subscription.list"
-    update_cache: false
-    state: present

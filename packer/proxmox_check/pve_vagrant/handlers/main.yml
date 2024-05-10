@@ -5,4 +5,4 @@
     cmd: "/usr/sbin/update-grub2"
   register: pve_vagrant__grub_result
   changed_when: >
-    'done' is in pve_vagrant__grub_result.stdout
+    'done' is in pve_vagrant__grub_result.stderr

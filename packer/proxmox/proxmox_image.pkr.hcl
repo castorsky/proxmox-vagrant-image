@@ -2,17 +2,18 @@ source "qemu" "proxmox-qemu-image" {
   iso_checksum = "sha256:d99d182a0df4ba94c27668d3e33d14cc286d775a7bdf571a86c24ea522009e93"
   iso_url      = "file:///home/castor/Downloads/proxmox-ve_8.2-1.iso"
 
-  disk_size      = "40G"
-  disk_interface = "virtio"
-  disk_cache     = "writeback"
-  disk_discard   = "unmap"
-  format         = "qcow2"
-  accelerator    = "kvm"
-  headless       = false
-  cpu_model      = "host"
-  cores = 2
-  memory         = 2048
-  net_device     = "virtio-net"
+  disk_size          = "40G"
+  disk_interface     = "virtio-scsi"
+  disk_cache         = "none"
+  disk_discard       = "unmap"
+  disk_detect_zeroes = "unmap"
+  format             = "qcow2"
+  accelerator        = "kvm"
+  headless           = false
+  cpu_model          = "host"
+  cores              = 2
+  memory             = 2048
+  net_device         = "virtio-net"
 
   ssh_username = "root"
   ssh_password = "vagrant"

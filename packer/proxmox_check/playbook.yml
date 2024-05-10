@@ -3,4 +3,11 @@
   hosts: all
   become: true
   roles:
-    - pve-vagrant
+    - pve_vagrant
+  # tasks:
+  #   - name: Execute handlers
+  #     ansible.builtin.meta: flush_handlers
+
+  #   - name: Pause
+  #     ansible.builtin.pause:
+  #       minutes: 10
