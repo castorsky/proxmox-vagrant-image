@@ -1,23 +1,31 @@
-variable "proxmox_password" {
-  type        = string
-  default     = "supersecret"
-  description = "User password to use when connecting to PVE API."
+locals {
+  pve_debian_base = {
+    v6 = "buster"
+    v7 = "bullseye"
+    v8 = "bookworm"
+  }
 }
 
-variable "proxmox_username" {
+variable "pve_source_iso_url" {
   type        = string
-  default     = "apiuser@pve!token"
-  description = "User with realm and optionally token name to use when connecting to PVE API."
+  default     = "https://enterprise.proxmox.com/iso/proxmox-ve_6.4-1.iso"
+  description = "URL to download installation ISO image from."
 }
 
-variable "proxmox_node" {
+variable "pve_source_iso_checksum" {
   type        = string
-  default     = "pve"
-  description = "Use this PVE node to pack image."
+  default     = "sha256:ab71b03057fdeea29804f96f0ff4483203b8c7a25957a4f69ed0002b5f34e607"
+  description = "Checksum to verify downloaded ISO image."
 }
 
-variable "proxmox_url" {
+variable "pve_output_directory" {
   type        = string
-  default     = "https://127.0.0.1:8006/api2/json"
-  description = "Connect to PVE API with this URL."
+  default     = null
+  description = "Directory where builder will place resulting image."
+}
+
+variable "pve_image_disk_size" {
+  type        = string
+  default     = "40G"
+  description = "Size of disk image for Proxmox installation."
 }

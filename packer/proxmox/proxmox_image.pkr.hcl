@@ -1,9 +1,9 @@
 source "qemu" "proxmox-qemu-image" {
-  iso_checksum     = "sha256:d99d182a0df4ba94c27668d3e33d14cc286d775a7bdf571a86c24ea522009e93"
-  iso_url          = "file:///home/castor/Downloads/proxmox-ve_8.2-1.iso"
-  output_directory = "/home/castor/temp/output_proxmox"
+  iso_checksum     = var.pve_source_iso_checksum
+  iso_url          = var.pve_source_iso_url
+  output_directory = var.pve_output_directory
 
-  disk_size          = "40G"
+  disk_size          = var.pve_image_disk_size
   disk_interface     = "virtio-scsi"
   disk_cache         = "none"
   disk_discard       = "unmap"
