@@ -30,12 +30,12 @@
     update_cache: false
     state: absent
   loop:
-    - deb https://enterprise.proxmox.com/debian/pve bookworm pve-enterprise
-    - deb https://enterprise.proxmox.com/debian/ceph-quincy bookworm enterprise
+    - deb https://enterprise.proxmox.com/debian/pve {{ ansible_distribution_release }} pve-enterprise
+    - deb https://enterprise.proxmox.com/debian/ceph-quincy {{ ansible_distribution_release }} enterprise
 
 - name: Add no-subscription repository
   ansible.builtin.apt_repository:
-    repo: "deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription"
+    repo: "deb http://download.proxmox.com/debian/pve {{ ansible_distribution_release }} pve-no-subscription"
     filename: "pve-no-subscription.list"
     update_cache: false
     state: present
@@ -63,3 +63,28 @@
     group: root
     mode: "0644"
     backup: false
+
+- name: Upgrade OS and reboot machine to activate new kernel
+  when: >
+    pve_vagrant__system_upgrade == "YES"
+  block:
+    - name: Dist-upgrade OS
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: "dist"
+
+    - name: Reboot virtual machine
+      ansible.builtin.reboot:
+
+- name: Copy script for compactifiyng
+  ansible.builtin.copy:
+    src: "zeroing.sh"
+    dest: "/usr/local/sbin/zeroing.sh"
+    owner: root
+    group: root
+    mode: "0750"
+
+- name: Execute compactifiyng script
+  ansible.builtin.command:
+    cmd: "/usr/local/sbin/zeroing.sh"
+  changed_when: false

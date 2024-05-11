@@ -15,19 +15,29 @@ source "qemu" "proxmox-qemu-image" {
   cores              = 2
   memory             = 2048
   net_device         = "virtio-net"
-  shutdown_command   = "echo 'packer' | sudo -S shutdown -P now"
+  qemuargs           = [
+    # These options are from default Packer options fetched with PACKER_LOG=1
+    # (custom `-device` options overwite defaul ones and leave VM without disk).
+    ["-device", "virtio-scsi-pci,id=scsi0"],
+    ["-device", "scsi-hd,bus=scsi0.0,drive=drive0"],
+    # These are custom option to add QEMU guest agent
+    ["-chardev", "socket,path=/tmp/qga.sock,server=on,wait=off,id=qga0"],
+    ["-device", "virtio-serial"],
+    ["-device", "virtserialport,chardev=qga0,name=org.qemu.guest_agent.0"]
+  ]
+  shutdown_command   = "echo 'packer' | shutdown -P now"
 
   ssh_username = "root"
   ssh_password = "vagrant"
   ssh_timeout  = "10m"
 
   # Script to simulate manual installation
-  boot_wait = "20s"
+  boot_wait = "10s"
   boot_steps = [
     ["<enter><wait1m>", "Select GRUB option and wait 1 min for installer to boot"],
     ["<tab><tab><tab><enter><wait>", "Accept license"],
     ["<enter><wait>", "Leave disk setting with defaults"],
-    ["united states<down><enter><wait><tab><tab>", "Use US locale and New York timezone"],
+    ["united states<down><enter><wait><enter><tab>", "Use US locale and New York timezone"],
     ["<down><down><down><down><down><down><down><down><down><down>"],
     ["<down><down><down><down><down><down><down><down><down><down><enter><enter>"],
     ["<tab><tab><tab><enter><wait>"],

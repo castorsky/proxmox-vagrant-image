@@ -1,3 +1,4 @@
 ---
 # defaults file for pve-vagrant
 pve_vagrant__vagrant_key_url: "https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub"
+pve_vagrant__system_upgrade: "NO"

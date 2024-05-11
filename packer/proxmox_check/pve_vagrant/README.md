@@ -20,7 +20,9 @@ No special modules needed, just ansible dependencies.
 Role Variables
 --------------
 
-There is no much options to configure. Only one variable exists at this moment: `pve_vagrant__vagrant_key_url`, which sets URL where insecure Vagrant public key can be found.
+There is no much options to configure. There are some variable exist at this moment:
+ - `pve_vagrant__vagrant_key_url` which sets URL where insecure Vagrant public key can be found;
+ - `pve_vagrant__system_upgrade` which controls if OS will be upgraded prior to packaging (accepts YES/NO string, passing boolean variables via Packer have a strange behavior).
 
 Dependencies
 ------------

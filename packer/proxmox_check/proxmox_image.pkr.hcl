@@ -1,10 +1,10 @@
 source "qemu" "proxmox-qemu-image" {
-  iso_checksum     = "md5:a9c326a264a0f1d7b9af76dc88e6c44f"
-  iso_url          = "file:///home/castor/temp/output_proxmox/packer-proxmox-qemu-image"
-  output_directory = "/home/castor/temp/output_proxmox_check"
+  iso_checksum     = "none"
+  iso_url          = "file://${var.pve_output_directory}/packer-proxmox-qemu-image"
+  output_directory = "${var.pve_output_directory}_provision"
 
   disk_image         = true
-  use_backing_file   = true
+  use_backing_file   = false
   disk_interface     = "virtio-scsi"
   disk_cache         = "none"
   skip_resize_disk   = false
@@ -17,7 +17,17 @@ source "qemu" "proxmox-qemu-image" {
   cores              = 2
   memory             = 2048
   net_device         = "virtio-net"
-  shutdown_command   = "echo 'packer' | sudo -S shutdown -P now"
+  qemuargs           = [
+    # These options are from default Packer options fetched with PACKER_LOG=1
+    # (custom `-device` options overwite defaul ones and leave VM without disk).
+    ["-device", "virtio-scsi-pci,id=scsi0"],
+    ["-device", "scsi-hd,bus=scsi0.0,drive=drive0"],
+    # These are custom option to add QEMU guest agent
+    ["-chardev", "socket,path=/tmp/qga.sock,server=on,wait=off,id=qga0"],
+    ["-device", "virtio-serial"],
+    ["-device", "virtserialport,chardev=qga0,name=org.qemu.guest_agent.0"]
+  ]
+  shutdown_command   = "echo 'packer' | shutdown -P now"
 
   ssh_username = "root"
   ssh_password = "vagrant"
@@ -31,13 +41,18 @@ build {
   provisioner "ansible" {
     playbook_file   = "./playbook.yml"
     use_proxy       = "false"
-    extra_arguments = ["--extra-vars", "ansible_password=vagrant", "--diff"]
+    extra_arguments = [
+      "-e ansible_password=vagrant",
+      "-e pve_vagrant__system_upgrade=${var.pve_upgrade_after_install}",
+      "--diff"
+    ]
   }
 
   post-processors {
     post-processor "vagrant" {
       provider_override   = "libvirt"
-      keep_input_artifact = true
+      keep_input_artifact = false
+      output = "${var.pve_output_directory}_box/packer_{{.BuildName}}_{{.Provider}}_{{.Architecture}}.box"
     }
   }
 }
