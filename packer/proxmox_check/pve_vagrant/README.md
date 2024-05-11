@@ -1,31 +1,41 @@
-Role Name
+pve_vagrant
 =========
 
-A brief description of the role goes here.
+A simple role to configure default Proxmox VE installation to use it with Vagrant.
+
+The goal of this role is to make following changes:
+- install the `sudo` package;
+- create user `vagrant` with password `vagrant` and ability to use `sudo` without password prompt;
+- add insecure Vagrant public key to authorized keys of `vagrant` user;
+- remove enterprise repositories for PVE and Ceph;
+- add no-subscription PVE repository;
+- set kernel parameter to name network interfaces in old style (ethX);
+- configure network with predictable interface name `eth0`.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+No special modules needed, just ansible dependencies.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+There is no much options to configure. Only one variable exists at this moment: `pve_vagrant__vagrant_key_url`, which sets URL where insecure Vagrant public key can be found.
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+Collection `ansible.posix` needed to set authorized SSH key.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Using this role is as simple as:
 
-    - hosts: servers
+    - hosts: all
+      become: true
       roles:
-         - { role: username.rolename, x: 42 }
+        - pve_vagrant
 
 License
 -------
@@ -35,4 +45,4 @@ BSD
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Castor Sky (csky57@gmail.com)
