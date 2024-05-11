@@ -51,4 +51,23 @@ source "qemu" "proxmox-qemu-image" {
 
 build {
   sources = ["source.qemu.proxmox-qemu-image"]
+  
+  provisioner "ansible" {
+    playbook_file = "./playbook.yml"
+    use_proxy     = "false"
+    extra_arguments = [
+      "-e ansible_password=vagrant",
+      "-e pve_vagrant__system_upgrade=${var.pve_upgrade_after_install}",
+      "--diff"
+    ]
+  }
+
+  post-processors {
+    post-processor "vagrant" {
+      provider_override    = "libvirt"
+      keep_input_artifact  = false
+      vagrantfile_template = "vagrant_template.rb"
+      output               = "${var.pve_output_directory}_box/{{.BuildName}}_v${var.pve_box_version}_{{.Provider}}_{{.Architecture}}.box"
+    }
+  }
 }

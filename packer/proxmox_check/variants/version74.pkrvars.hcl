@@ -1,4 +1,0 @@
-pve_source_iso_url        = "file:///home/castor/Downloads/proxmox-ve_7.4-1.iso"
-pve_source_iso_checksum   = "sha256:55b672c4b0d2bdcbff9910eea43df3b269aaab3f23e7a1df18b82d92eb995916"
-pve_output_directory      = "/home/castor/temp/output_proxmox_v7"
-pve_upgrade_after_install = "YES"

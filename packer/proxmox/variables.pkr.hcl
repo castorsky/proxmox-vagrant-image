@@ -25,5 +25,14 @@ variable "pve_image_disk_size" {
 variable "pve_upgrade_after_install" {
   type        = string
   default     = "NO"
-  description = "Set if installation of Proxmox VE will be dist-upgraded after installation."
+  description = "Set if installation of Proxmox VE will be dist-upgraded after installation (YES/NO)."
+  validation {
+    condition     = var.pve_upgrade_after_install == "YES" || var.pve_upgrade_after_install == "NO"
+    error_message = "Variable pve_upgrade_after_install accepts only YES/NO values."
+  }
+}
+
+variable "pve_box_version" {
+  type = string
+  description = "Release build with this version."
 }
