@@ -1,0 +1,13 @@
+---
+- name: Copy script for compactifiyng
+  ansible.builtin.copy:
+    src: "zeroing.sh"
+    dest: "/usr/local/sbin/zeroing.sh"
+    owner: root
+    group: root
+    mode: "0750"
+
+- name: Execute compactifiyng script
+  ansible.builtin.command:
+    cmd: "/usr/local/sbin/zeroing.sh"
+  changed_when: false

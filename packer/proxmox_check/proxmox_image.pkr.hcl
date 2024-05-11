@@ -52,6 +52,7 @@ build {
     post-processor "vagrant" {
       provider_override   = "libvirt"
       keep_input_artifact = false
+      vagrantfile_template = "vagrant_template.rb"
       output = "${var.pve_output_directory}_box/packer_{{.BuildName}}_{{.Provider}}_{{.Architecture}}.box"
     }
   }

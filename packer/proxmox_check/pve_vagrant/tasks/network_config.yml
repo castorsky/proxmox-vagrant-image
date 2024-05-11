@@ -1,0 +1,19 @@
+---
+- name: Revert old fashion names for network interfaces (ethXX)
+  ansible.builtin.copy:
+    src: "grub-network-interfaces.cfg"
+    dest: "/etc/default/grub.d/network-interfaces.cfg"
+    owner: root
+    group: root
+    mode: "0644"
+    backup: false
+  notify: Rebuild GRUB config
+
+- name: Configure system network interfaces
+  ansible.builtin.copy:
+    src: "etc-network-interfaces"
+    dest: "/etc/network/interfaces"
+    owner: root
+    group: root
+    mode: "0644"
+    backup: false

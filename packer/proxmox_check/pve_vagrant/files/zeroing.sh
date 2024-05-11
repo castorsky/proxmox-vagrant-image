@@ -8,4 +8,5 @@ rm -rf /var/cache/apt
 fstrim -v /
 # Trim filesystem with dirty hack
 dd if=/dev/zero of=/zeroed bs=1M
+sync; sleep 1
 rm -f /zeroed

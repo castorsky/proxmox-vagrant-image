@@ -1,0 +1,8 @@
+---
+- name: Dist-upgrade OS
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: "dist"
+
+- name: Reboot virtual machine
+  ansible.builtin.reboot:
