@@ -15,6 +15,10 @@ source .venc/bin/activate
 pip install -r requirements.txt
 ansible-galaxy install -r requirements.yml
 ```
+4. openSUSE sometimes needs `qemu-ui-gtk` to be installed separately. Otherwise, the Packer can fail with error `Qemu stderr: qemu-system-x86_64: Display 'gtk' is not available`. And `sshpass` to login into box without public key.
+```shell
+zypper in qemu-ui-gtk sshpass
+```
 
 ## Executing
 
