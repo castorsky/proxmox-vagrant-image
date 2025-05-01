@@ -1,0 +1,7 @@
+---
+- name: Set insecure password for root user
+  # Since 8.4 Proxmox installer insist on secure password so we provide $3cURe password on install and
+  # set the default vagrant password later.
+  ansible.builtin.user:
+    name: "root"
+    password: "$6$3rtaXePeRZrLePT/$NRkB3ZyNdwabzbQU2H3KqgahWPgZa5dwwsx8I22BfmIdgFYP.JaBli8PGSVaa1QoEHFOVoahfjEnPPYQryoEY/"

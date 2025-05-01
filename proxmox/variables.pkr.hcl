@@ -33,6 +33,12 @@ variable "pve_upgrade_after_install" {
 }
 
 variable "pve_box_version" {
-  type = string
+  type        = string
   description = "Release build with this version."
+}
+
+variable "pve_temp_root_password" {
+  type        = string
+  description = "Use this `secure` password to install Proxmox PVE."
+  default     = "vagrant1234!@#$"
 }

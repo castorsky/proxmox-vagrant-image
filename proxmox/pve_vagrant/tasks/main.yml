@@ -2,22 +2,26 @@
 # tasks file for pve-vagrant
 - name: Setup vagrant user
   ansible.builtin.import_tasks:
-    file: vagrant_user.yml
+    file: 10_vagrant_user.yml
+
+- name: Setup root user
+  ansible.builtin.import_tasks:
+    file: 11_root_user.yml
 
 - name: Setup repositories
   ansible.builtin.import_tasks:
-    file: apt_repos.yml
+    file: 20_apt_repos.yml
 
 - name: Configure network
   ansible.builtin.import_tasks:
-    file: network_config.yml
+    file: 30_network_config.yml
 
 - name: Upgrade OS and reboot machine to activate new kernel
   when: >
     pve_vagrant__system_upgrade == "YES"
   ansible.builtin.import_tasks:
-    file: upgrade.yml
+    file: 40_upgrade.yml
 
 - name: Clear cache and free unused space
   ansible.builtin.import_tasks:
-    file: compact.yml
+    file: 50_compact.yml

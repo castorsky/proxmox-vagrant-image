@@ -15,7 +15,7 @@ source "qemu" "proxmox-qemu-image" {
   cores              = 2
   memory             = 2048
   net_device         = "virtio-net"
-  qemuargs           = [
+  qemuargs = [
     # These options are from default Packer options fetched with PACKER_LOG=1
     # (custom `-device` options overwite defaul ones and leave VM without disk).
     ["-device", "virtio-scsi-pci,id=scsi0"],
@@ -25,10 +25,10 @@ source "qemu" "proxmox-qemu-image" {
     ["-device", "virtio-serial"],
     ["-device", "virtserialport,chardev=qga0,name=org.qemu.guest_agent.0"]
   ]
-  shutdown_command   = "echo 'packer' | shutdown -P now"
+  shutdown_command = "echo 'packer' | shutdown -P now"
 
   ssh_username = "root"
-  ssh_password = "vagrant"
+  ssh_password = var.pve_temp_root_password
   ssh_timeout  = "10m"
 
   # Script to simulate manual installation
@@ -41,9 +41,15 @@ source "qemu" "proxmox-qemu-image" {
     ["<down><down><down><down><down><down><down><down><down><down>"],
     ["<down><down><down><down><down><down><down><down><down><down><enter><enter>"],
     ["<tab><tab><tab><enter><wait>"],
-    ["vagrant<tab>vagrant<tab>vagrant@example.com<tab><tab><enter><wait>", "Input password and email (default email fails)"],
+    [
+      "${var.pve_temp_root_password}<tab>${var.pve_temp_root_password}<tab>vagrant@example.com<tab><tab><enter><wait>",
+      "Input password and email (default email fails)"
+    ],
     ["pve.example.com<tab><tab><tab><tab><tab><tab><enter><wait><enter>", "Set only hostname, launch installation"],
-    ["<wait3m>root<enter><wait>vagrant<enter><wait3s>", "Wait 3 min for setup to complete, then install qemu-guest-agent"],
+    [
+      "<wait3m>root<enter><wait>${var.pve_temp_root_password}<enter><wait3s>",
+      "Wait 3 min for setup to complete, then install qemu-guest-agent"
+    ],
     ["apt update; apt install -y qemu-guest-agent<enter><wait1m>"],
     ["systemctl enable --now qemu-guest-agent<enter>"]
   ]
@@ -51,12 +57,19 @@ source "qemu" "proxmox-qemu-image" {
 
 build {
   sources = ["source.qemu.proxmox-qemu-image"]
-  
+
   provisioner "ansible" {
-    playbook_file = "./playbook.yml"
+    playbook_file = "${path.root}/playbook.yml"
     use_proxy     = "false"
+
+    ansible_env_vars = [
+      "ANSIBLE_HOST_KEY_CHECKING=False",
+      "ANSIBLE_COLLECTIONS_PATHS=${path.root}/../.ansible/collections",
+      "ANSIBLE_ROLES_PATH=${path.root}/../.ansible/roles"
+    ]
+
     extra_arguments = [
-      "-e ansible_password=vagrant",
+      "-e ansible_password=${var.pve_temp_root_password}",
       "-e pve_vagrant__system_upgrade=${var.pve_upgrade_after_install}",
       "--diff"
     ]
@@ -66,7 +79,7 @@ build {
     post-processor "vagrant" {
       provider_override    = "libvirt"
       keep_input_artifact  = false
-      vagrantfile_template = "vagrant_template.rb"
+      vagrantfile_template = "${path.root}/vagrant_template.rb"
       output               = "${var.pve_output_directory}_box/{{.BuildName}}_v${var.pve_box_version}_{{.Provider}}_{{.Architecture}}.box"
     }
   }
