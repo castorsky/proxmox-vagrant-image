@@ -66,7 +66,7 @@ The default image hostname is `pve` and you will have to add a few steps to use 
 
 ```ruby
 $hostname_script = <<-'SCRIPT'
-PRESENT=$(cat /etc/hosts | grep -c "10.0.2.15.*$1");
+PRESENT=$(cat /etc/hosts | grep -c "10.0.2.15.*$@");
 if [[ $PRESENT -lt 1 ]]; then
     echo "10.0.2.15 $@" >> /etc/hosts;
     echo "Hostname configured. Rebooting node now!";
