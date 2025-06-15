@@ -60,6 +60,30 @@ vagrant up
 vagrant ssh
 ```
 
+## Advanced usage notes
+
+The default image hostname is `pve` and you will have to add a few steps to use a custom hostname as the Proxmox API relies on the hostname and uses it heavily under the hood. No VM/CT will start until Proxmox daemons will know about the custom hostname (Vagrant changes hostname after PVE daemons are already running). You can use similar script to provision Proxmox node with custom hostname:
+
+```ruby
+$hostname_script = <<-'SCRIPT'
+PRESENT=$(cat /etc/hosts | grep -c "10.0.2.15.*$1");
+if [[ $PRESENT -lt 1 ]]; then
+    echo "10.0.2.15 $@" >> /etc/hosts;
+    echo "Hostname configured. Rebooting node now!";
+    systemctl reboot;
+fi
+SCRIPT
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "castor/proxmox"
+  config.vm.hostname = "my-pve-host"
+  config.vm.provision "shell" do |sh|
+    sh.inline = $hostname_script
+    sh.args = "my-pve-host.example.com my-pve-host"
+  end
+end
+```
+
 ## License
 
 BSD
