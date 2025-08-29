@@ -17,3 +17,11 @@
     group: root
     mode: "0644"
     backup: false
+
+- name: Install ISC-DHCP client for ifupdown2
+  when: ansible_distribution_major_version == "13"
+  # ifupdown2 does not work with dhcpd, udhcpc, etc.
+  # It only supports isc-dhcp-client (despite it deprecation)
+  ansible.builtin.apt:
+    name: isc-dhcp-client
+    state: present
