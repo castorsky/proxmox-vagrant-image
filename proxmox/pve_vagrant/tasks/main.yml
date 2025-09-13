@@ -9,8 +9,8 @@
     file: 11_root_user.yml
 
 - name: Setup repositories
-  ansible.builtin.import_tasks:
-    file: 20_apt_repos.yml
+  ansible.builtin.include_tasks:
+    file: "20_apt_repos{{ '_legacy' if ansible_distribution_major_version | int < 9 else '' }}.yml"
 
 - name: Configure network
   ansible.builtin.import_tasks:

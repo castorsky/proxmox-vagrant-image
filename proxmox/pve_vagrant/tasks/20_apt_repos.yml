@@ -1,16 +1,21 @@
----
-- name: Remove enterprise repositories
-  ansible.builtin.apt_repository:
-    repo: "{{ item }}"
-    update_cache: false
+- name: Apt repos | Remove enterprise repositories
+  ansible.builtin.deb822_repository:
+    name: "{{ item.name }}"
+    types: deb
     state: absent
-  loop:
-    - deb https://enterprise.proxmox.com/debian/pve {{ ansible_distribution_release }} pve-enterprise
-    - deb https://enterprise.proxmox.com/debian/ceph-quincy {{ ansible_distribution_release }} enterprise
+    components: "{{ item.components }}"
+    uris: "{{ item.uris }}"
+    suites: "{{ item.suites }}"
+    signed_by: "/usr/share/keyrings/proxmox-archive-keyring.gpg"
+  loop: "{{ pve_vagrant__deb822_del_repos[ansible_distribution_major_version] }}"
 
-- name: Add no-subscription repository
-  ansible.builtin.apt_repository:
-    repo: "deb http://download.proxmox.com/debian/pve {{ ansible_distribution_release }} pve-no-subscription"
-    filename: "pve-no-subscription.list"
-    update_cache: false
+- name: Apt repos | Add no-subscription repositories
+  ansible.builtin.deb822_repository:
+    name: "{{ item.name }}"
+    types: deb
     state: present
+    components: "{{ item.components }}"
+    uris: "{{ item.uris }}"
+    suites: "{{ item.suites }}"
+    signed_by: "/usr/share/keyrings/proxmox-archive-keyring.gpg"
+  loop: "{{ pve_vagrant__deb822_add_repos[ansible_distribution_major_version] }}"
