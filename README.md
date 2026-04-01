@@ -56,7 +56,7 @@ Add box image from the local source and create VM with vagrant:
 vagrant box add /home/castor/temp/output_proxmox_v84_box/proxmox-qemu-image_v8.4.0_libvirt_amd64.box --name proxmox-qemu
 mkdir -p ~/temp/proxmox-test-image && cd ~/temp/proxmox-test-image
 vagrant init proxmox-qemu
-vagrant up
+vagrant up --provider=libvirt
 vagrant ssh
 ```
 

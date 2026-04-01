@@ -1,3 +1,19 @@
+locals {
+  # Find out which version of Proxmox is building.
+  version_parts = split(".", var.pve_box_version)
+  major = parseint(local.version_parts[0], 10)
+  minor = parseint(local.version_parts[1], 10)
+
+  # True for versions >= 9.1 (e.g., 9.1.x, 9.2, 10.0, etc.)
+  is_9_1_or_newer = local.major > 9 || (local.major == 9 && local.minor >= 1)
+
+  # Number of tabs needed for different stages:
+  license_tab_count = local.is_9_1_or_newer ? 4 : 3
+  network_tab_count = local.is_9_1_or_newer ? 8 : 6
+  license_tabs = join("", [for i in range(local.license_tab_count) : "<tab>"])
+  network_tabs = join("", [for i in range(local.network_tab_count) : "<tab>"])
+}
+
 source "qemu" "proxmox-qemu-image" {
   iso_checksum     = var.pve_source_iso_checksum
   iso_url          = var.pve_source_iso_url
@@ -35,7 +51,7 @@ source "qemu" "proxmox-qemu-image" {
   boot_wait = "10s"
   boot_steps = [
     ["<enter><wait1m>", "Select GRUB option and wait 1 min for installer to boot"],
-    ["<tab><tab><tab><enter><wait>", "Accept license"],
+    ["${local.license_tabs}<enter><wait>", "Accept license"],
     ["<enter><wait>", "Leave disk setting with defaults"],
     ["united states<down><enter><wait><enter><tab>", "Use US locale and New York timezone"],
     ["<down><down><down><down><down><down><down><down><down><down>"],
@@ -45,7 +61,7 @@ source "qemu" "proxmox-qemu-image" {
       "${var.pve_temp_root_password}<tab>${var.pve_temp_root_password}<tab>vagrant@example.com<tab><tab><enter><wait>",
       "Input password and email (default email fails)"
     ],
-    ["pve.example.com<tab><tab><tab><tab><tab><tab><enter><wait><enter>", "Set only hostname, launch installation"],
+    ["pve.example.com${local.network_tabs}<enter><wait><enter>", "Set only hostname, launch installation"],
     [
       "<wait3m>root<enter><wait>${var.pve_temp_root_password}<enter><wait3s>",
       "Wait 3 min for setup to complete, then install qemu-guest-agent"
